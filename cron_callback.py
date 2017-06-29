@@ -3,6 +3,15 @@
 import time
 import os
 import subprocess
+import argparse
+
+
+# parse command line arguments
+parser = argparse.ArgumentParser(description='Tracks working time based on your first login time after 5am.')
+parser.add_argument('-v', '--verbose', action='store_true', help='print stats')
+
+args = parser.parse_args()
+
 
 current_timestamp = time.time()
 logfolder_name = os.path.expanduser("~") + "/.log/activity"
@@ -32,6 +41,13 @@ with open(logfile_name, "a+") as logfile:
 
 # produce a warning dialog every 30 min, if working longer than 8 hours (assumes cronjob every minute, 1 hour lunch break)
 working_time = (current_timestamp - start_timestamp) / (60 * 60)
+
+if args.verbose:
+    print(time.strftime("start: %Y-%m-%d %H:%M", time.localtime(start_timestamp)),
+          time.strftime("start: %Y-%m-%d %H:%M", time.localtime(current_timestamp)),
+          "working time:",
+          working_time,
+          " (incl. lunch break)")
 
 #print(start_timestamp, current_timestamp, working_time)
 
