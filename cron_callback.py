@@ -65,14 +65,14 @@ if last_alert is not None:
 if args.verbose:
     print(time.strftime("start: " + DATE_FORMAT, time.localtime(start_timestamp)))
     print(time.strftime("current: " + DATE_FORMAT, time.localtime(current_timestamp)))
-    print("working time:", working_time, " (incl. lunch break)")
+    print("working time:", working_time - 1., " (plus 1 hour est. lunch break)")
     print("time_since_last_alert:", time_since_last_alert)
 
 if working_time > 8 + 1 and time_since_last_alert >= 0.5:
     active_window = str(int(subprocess.check_output("xdotool getwindowfocus", shell=True)))
     subprocess.check_call("kdialog --sorry 'You are already working more than "
-                          + ("%0.1f" % working_time)
-                          + " hours! (incl. lunch break)\n\nTime to go home :-)' --attach "
+                          + ("%0.1f" % (working_time - 1.))
+                          + " hours! (plus 1 hour est. lunch break)\n\nTime to go home :-)' --attach "
                           + active_window
                           , shell=True)
 
