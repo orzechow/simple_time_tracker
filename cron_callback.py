@@ -70,18 +70,24 @@ if args.verbose:
     print("time_since_last_alert:", time_since_last_alert)
 
 if (working_time > 8 + 1 and time_since_last_alert >= 0.5) or args.force:
-    active_window = str(int(subprocess.check_output("xdotool getwindowfocus", shell=True)))
-    subprocess.check_call("kdialog --sorry 'You are already working more than "
-                          + ("%0.1f" % (working_time - 1.))
-                          + " hours! (plus 1 hour est. lunch break)\n\nTime to go home :-)' --attach "
-                          + active_window
-                          , shell=True)
 
-    with open(logfile_name, "a") as logfile:
-        # log the alert
-        locked_screen = str(int(subprocess.check_output("ps -e | grep screenlocker | wc -l", shell=True)))
-        new_line = time.strftime(DATE_FORMAT, time.localtime(current_timestamp)) \
-                   + "; " + locked_screen \
-                   + "; " + ALERT_STRING \
-                   + os.linesep
-        logfile.write(new_line)
+    dialog_already_open = int(subprocess.check_output("ps -fe | grep cron_callback.py | wc -l", shell=True)) > 3
+    if args.verbose:
+        print("dialog_already_open: ", dialog_already_open)#, " str:", dialog_already_open_str)
+    
+    if not dialog_already_open:
+        active_window = str(int(subprocess.check_output("xdotool getwindowfocus", shell=True)))
+        subprocess.check_call("kdialog --sorry 'You are already working more than "
+                              + ("%0.1f" % (working_time - 1.))
+                              + " hours! (plus 1 hour est. lunch break)\n\nTime to go home :-)' --attach "
+                              + active_window
+                              , shell=True)
+    
+        with open(logfile_name, "a") as logfile:
+            # log the alert
+            locked_screen = str(int(subprocess.check_output("ps -e | grep screenlocker | wc -l", shell=True)))
+            new_line = time.strftime(DATE_FORMAT, time.localtime(current_timestamp)) \
+                       + "; " + locked_screen \
+                       + "; " + ALERT_STRING \
+                       + os.linesep
+            logfile.write(new_line)
