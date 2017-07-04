@@ -14,6 +14,7 @@ ALERT_STRING = "alerted"
 # parse command line arguments
 parser = argparse.ArgumentParser(description='Tracks working time based on your first login time after 5am.')
 parser.add_argument('-v', '--verbose', action='store_true', help='print stats')
+parser.add_argument('-f', '--force', action='store_true', help='force dialog pop-up')
 
 args = parser.parse_args()
 
@@ -68,7 +69,7 @@ if args.verbose:
     print("working time:", working_time - 1., " (plus 1 hour est. lunch break)")
     print("time_since_last_alert:", time_since_last_alert)
 
-if working_time > 8 + 1 and time_since_last_alert >= 0.5:
+if (working_time > 8 + 1 and time_since_last_alert >= 0.5) or args.force:
     active_window = str(int(subprocess.check_output("xdotool getwindowfocus", shell=True)))
     subprocess.check_call("kdialog --sorry 'You are already working more than "
                           + ("%0.1f" % (working_time - 1.))
