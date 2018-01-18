@@ -9,6 +9,8 @@ import argparse
 # constants
 DATE_FORMAT = "%Y-%m-%d %H:%M"
 ALERT_STRING = "alerted"
+LUNCH_BREAK_DURATION = 1
+ALERT_WORKING_DURATION = 8
 
 
 # parse command line arguments
@@ -69,7 +71,7 @@ if args.verbose:
     print("working time:", working_time - 1., " (plus 1 hour est. lunch break)")
     print("time_since_last_alert:", time_since_last_alert)
 
-if (working_time > 8 + 1 and time_since_last_alert >= 0.5) or args.force:
+if (working_time > ALERT_WORKING_DURATION + LUNCH_BREAK_DURATION and time_since_last_alert >= 0.5) or args.force:
 
     dialog_already_open = int(subprocess.check_output("ps -fe | grep cron_callback.py | wc -l", shell=True)) > 3
     if args.verbose:
