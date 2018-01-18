@@ -11,6 +11,7 @@ DATE_FORMAT = "%Y-%m-%d %H:%M"
 ALERT_STRING = "alerted"
 LUNCH_BREAK_DURATION = 1
 ALERT_WORKING_DURATION = 8
+ALERT_MESSAGE = "Time to go home :-)"
 
 
 # parse command line arguments
@@ -78,12 +79,14 @@ if (working_time > ALERT_WORKING_DURATION + LUNCH_BREAK_DURATION and time_since_
         print("dialog_already_open: ", dialog_already_open)#, " str:", dialog_already_open_str)
 
     if not dialog_already_open:
+        message = ("You are already working more than %0.1f hours! (plus %0.1f hour est. lunch break)"
+                   % (working_time - LUNCH_BREAK_DURATION, LUNCH_BREAK_DURATION))
+
+        if working_time > ALERT_WORKING_DURATION + LUNCH_BREAK_DURATION:
+            message += "\n\n" + ALERT_MESSAGE
+
         active_window = str(int(subprocess.check_output("xdotool getwindowfocus", shell=True)))
-        subprocess.check_call("kdialog --sorry 'You are already working more than "
-                              + ("%0.1f" % (working_time - 1.))
-                              + " hours! (plus 1 hour est. lunch break)\n\nTime to go home :-)' --attach "
-                              + active_window
-                              , shell=True)
+        subprocess.check_call("kdialog --sorry '%s' --attach %s" % (message, active_window), shell=True)
 
         with open(logfile_name, "a") as logfile:
             # log the alert
