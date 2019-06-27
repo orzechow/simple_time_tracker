@@ -32,12 +32,20 @@ logfile_name = logfolder_name \
                + "/" \
                + time.strftime("%Y-%m-%d", time.localtime(current_timestamp - 5*60*60)) \
                + ".log"
+symlink_name = logfolder_name + "/latest.log"
 
 # create logfolder if it doesn't exist
 try:
     os.mkdir(logfolder_name)
 except:
     pass
+
+# create "latest" symlink to logfile
+try:
+    os.remove(symlink_name)
+except:
+    pass
+os.symlink(logfile_name, symlink_name)
 
 
 last_alert = None
